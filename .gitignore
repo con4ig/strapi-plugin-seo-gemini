@@ -72,6 +72,8 @@ $RECYCLE.BIN/
 *.sql
 *.sqlite
 *.sqlite3
+build_err.txt
+build_err2.txt
 
 
 ############################

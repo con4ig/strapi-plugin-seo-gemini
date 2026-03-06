@@ -4,22 +4,13 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   /**
    * Analyzes text content and generates optimized SEO metadata using Google Gemini AI.
-   * 
+   *
    * This service enforces strict JSON response formatting to ensure integration stability.
    * It implements a fallback mechanism, sequentially attempting to use 'gemini-2.5-flash',
    * 'gemini-2.0-flash', and 'gemini-1.5-flash' to mitigate potential 503 or 429 API errors.
-   * The API key must be securely configured via Strapi config (`config/plugins.ts`) or 
-   * via the `GEMINI_API_KEY` environment variable.
-   * 
-   * @param {string} content - The raw text content (e.g., an article body) to be analyzed.
-   * @returns {Promise<Record<string, unknown>>} A Promise that resolves to a parsed JSON object containing:
-   *   - {string} title - Optimized SEO Title (max 60 chars).
-   *   - {string} description - Optimized Meta Description (max 160 chars).
-   *   - {string|string[]} keywords - Relevant SEO keywords.
-   *   - {string} metaRobots - Indexing instructions (e.g., "index, follow").
-   *   - {Record<string, unknown>} structuredData - A JSON-LD object for schema.org markup.
-   * @throws {Error} If `content` is empty.
-   * @throws {Error} If all configured Gemini models fail to generate a response.
+   *
+   * @param {string} content - Raw text content for analysis.
+   * @returns {Promise<Record<string, unknown>>} Parsed JSON metadata.
    */
   async generateSeo(content: string) {
     if (!content) {
@@ -29,12 +20,13 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     // @ts-ignore - strapi config typing is incomplete
     const config = strapi.config.get('plugin::strapi-plugin-seo-gemini') as { apiKey?: string };
     const apiKey = config?.apiKey || process.env.GEMINI_API_KEY;
-    
+
     if (!apiKey) {
       strapi.log.warn('SEO Gemini: GEMINI_API_KEY or plugin config is missing');
       return {
         title: 'SEO Gemini | Key Missing',
-        description: 'Please configure the API Key in config/plugins.ts or .env to enable AI generation.',
+        description:
+          'Please configure the API Key in config/plugins.ts or .env to enable AI generation.',
       };
     }
 
@@ -45,36 +37,35 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
     for (const modelName of modelsToTry) {
       try {
         strapi.log.info(`SEO Gemini: Generating with ${modelName}...`);
-        
-        const model = genAI.getGenerativeModel({ 
+
+        const model = genAI.getGenerativeModel({
           model: modelName,
           generationConfig: {
-            responseMimeType: "application/json",
-          }
+            responseMimeType: 'application/json',
+          },
         });
 
         const prompt = `
           You are an expert SEO copywriter.
           Analyze the following content and generate concise, highly optimized SEO metadata.
           
-          Requirements:
-          1. "title": Compelling title (max 60 chars).
-          2. "description": Compelling summary (max 160 chars).
-          3. "keywords": Relevant keywords, comma-separated.
+          CRITICAL REQUIREMENTS:
+          1. "title": Compelling title < 60 chars.
+          2. "description": Compelling summary < 160 chars.
+          3. "keywords": Comma-separated keywords.
           4. "metaRobots": "index, follow".
-          5. "structuredData": Valid JSON-LD Article/WebPage schema. Return as object.
+          5. "structuredData": Valid JSON-LD object.
           
           Return ONLY valid JSON in this exact format:
           {
-            "title": "Optimized Title",
-            "description": "Optimized Description",
-            "keywords": "k1, k2, k3",
+            "title": "...",
+            "description": "...",
+            "keywords": "...",
             "metaRobots": "index, follow",
             "structuredData": {}
           }
           
-          Content:
-          ${content}
+          Content: ${content}
         `;
 
         const result = await model.generateContent(prompt);
@@ -84,9 +75,7 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
         return parsed;
       } catch (err: unknown) {
         lastError = err;
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        strapi.log.warn(`SEO Gemini: ${modelName} failed: ${errorMessage}`);
-        // If it's a quote or service error, try next model.
+        strapi.log.warn(`SEO Gemini: ${modelName} failed`);
         continue;
       }
     }
