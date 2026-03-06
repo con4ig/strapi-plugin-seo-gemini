@@ -1,24 +1,29 @@
 # Strapi SEO Gemini Plugin
 
-A premium, AI-powered Strapi plugin that seamlessly generates highly optimized SEO metadata (Title, Description, Keywords, Robots, and JSON-LD Structured Data) using Google's Gemini Flash models.
+An enterprise-grade Strapi 5 plugin that leverages Google's Gemini Flash AI models to automate SEO metadata generation. This project demonstrates high-quality software engineering practices, including strict TypeScript typing, deep Strapi admin integration, and optimized architectural patterns.
 
-## Features
+## Technical Highlights
 
-- **Automated Metadata**: Generates Title, Description, Keywords, Meta Robots, and Structured Data (JSON-LD) from any text.
-- **Strict Architecture**: Built with TypeScript, enforcing strict types (`unknown` over `any`), and adhering to the Clean Code Controller-Service pattern.
-- **Seamless UI**: A highly polished, customized Strapi admin interface featuring asymmetric grid layouts, sophisticated typography, and smooth skeleton loaders.
-- **Enterprise Reliability**: Implements an automatic model fallback system (`gemini-2.5-flash` -> `2.0` -> `1.5`) to handle high API demand (503) or rate limits (429) invisibly to the user.
-- **Frontend Optimized**: The React UI uses `useMemo`, `useCallback`, and `useRef` to guarantee 60fps rendering, eliminating unneeded re-renders and memory leaks.
+- **Native Strapi 5 Integration**: Deeply integrated into the Strapi Content Manager using the `editView.right-links` injection zone, providing a seamless sidebar workflow.
+- **Strict TypeScript Architecture**: 100% type-safe codebase. Zero usage of `any`. Implements specific interfaces for Strapi application contexts, Koa request/response cycles, and AI data schemas.
+- **Architectural Patterns**: Adheres to the **Controller-Service** pattern, ensuring a clean separation of concerns between API endpoints and business logic/AI orchestration.
+- **AI Orchestration & Fallbacks**: Features a robust Multi-Model Fallback mechanism (`gemini-2.5-flash` -> `2.0` -> `1.5`) to ensure high availability and resistance to API rate-limiting or outages.
+- **Intelligent Data Extraction**: Implements a dedicated content analysis utility that handles Strapi 5's new 'Blocks' JSON format and legacy text fields with intelligent context prioritization.
+- **One-Way Form Population**: Uses Strapi's internal `useForm` hook to programmatically populate form fields across various naming conventions (`SEO`, `seo`, `Seo`) using dynamic prefix detection.
 
 ## Requirements
 
-- Strapi v5.x
-- Node.js >= 18.x
-- A Google Gemini API Key
+- **Strapi v5.x** (Standard and Enterprise)
+- **Node.js >= 18.x**
+- **Google Gemini API Key**
+
+## Features
+
+- **Automated Metadata Generation**: Analyzes content to generate Meta Titles (conforming to 60-char limits), Meta Descriptions (conforming to 160-char limits), Keywords, Meta Robots, and JSON-LD Structured Data.
+- **Zero-Click Workflow**: Clicking "Generate with AI" automatically synchronizes the generated data with the entry's SEO component.
+- **Optimized UI**: Built with the official `@strapi/design-system`, featuring responsive layouts, consistent typography, and native Strapi styling (`filterShadow`).
 
 ## Installation
-
-To install the plugin in your Strapi project, run:
 
 ```bash
 npm install strapi-plugin-seo-gemini
@@ -26,7 +31,7 @@ npm install strapi-plugin-seo-gemini
 yarn add strapi-plugin-seo-gemini
 ```
 
-After installation, you will need to build your Strapi admin panel:
+After installation, rebuild the Strapi admin panel:
 
 ```bash
 npm run build
@@ -35,40 +40,39 @@ npm run develop
 
 ## Configuration
 
-For security and standard Marketplace compliance, the API key is configured via Strapi's plugin configuration system, separating secrets from the codebase.
+The plugin uses Strapi's configuration system for secure secret management.
 
-Add the configuration in your Strapi project's `config/plugins.ts` (or `.js`):
+Add the following to `config/plugins.ts` (or `.js`):
 
 ```typescript
 export default ({ env }) => ({
-  // ... other plugins
   'strapi-plugin-seo-gemini': {
     enabled: true,
     config: {
-      // Securely fetch the API key from your environment variables
       apiKey: env('GEMINI_API_KEY'),
     },
   },
 });
 ```
 
-Ensure you have `GEMINI_API_KEY=your_api_key_here` set in your project's `.env` file.
+Ensure `GEMINI_API_KEY` is present in your `.env` file.
 
 ## Usage
 
-1. Restart your Strapi backend.
-2. In the Strapi Admin Sidebar, click on **SEO Gemini**.
-3. Paste the content of your article, page, or product into the prominent text area.
-4. Click **Generate Metadata**.
-5. Once the AI finishes generating (indicated by the skeleton loaders), use the convenient **Copy** buttons to transfer the optimized metadata directly into your Content Manager fields.
+1. **Prerequisites**: Ensure you have a component named `SEO` (or `seo`/`Seo`) in your Content-Type schema. The component should include fields for `metaTitle`, `metaDescription`, `keywords`, `metaRobots`, and `structuredData`.
+2. **Content Generation**: Navigate to the **Content Manager** and open an entry (e.g., an Article) that contains the SEO component.
+3. **Sidebar Interaction**: In the right sidebar, locate the **SEO Gemini AI** widget.
+4. **AI Generation**: Click **"Generate with AI"**. The plugin will automatically extract content from the main entry fields, send it for analysis, and populate the SEO component fields instantly.
+5. **Review and Save**: Review the generated metadata in the SEO component at the bottom of the page and save the entry.
 
-## Development
+## Developer & Architectural Notes
 
-This plugin was rigorously audited for performance and architecture.
-- Frontend modifications (React): Check `admin/src/pages/HomePage.tsx`.
-- Backend AI Logic: Check `server/src/services/service.ts`.
+This plugin was built with a focus on maintainability and performance:
 
-To recompile during development:
-```bash
-npm run build
-```
+- **Scalability**: The modular service architecture allows for easy swapping of AI providers or generation logic.
+- **Performance**: Minimized re-renders in the Admin UI via efficient hook usage and optimized state management.
+- **Quality Assurance**: Scanned and verified for Clean Code principles, ensuring semantically meaningful naming and logical object structures.
+
+---
+
+_Developed as a demonstration of technical proficiency in Strapi Plugin Development and AI Integration._
