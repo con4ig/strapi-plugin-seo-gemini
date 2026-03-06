@@ -1,33 +1,42 @@
-import { getTranslation } from "./utils/getTranslation";
+import SeoSidebarWidget from './components/SeoSidebarWidget';
 import { PLUGIN_ID } from "./pluginId";
 import { Initializer } from "./components/Initializer";
 import { PluginIcon } from "./components/PluginIcon";
 
+interface StrapiApp {
+  addMenuLink: (link: Record<string, unknown>) => void;
+  getPlugin: (pluginId: string) => {
+    injectComponent: (
+      view: string,
+      zone: string,
+      options: { name: string; Component: React.ComponentType | (() => JSX.Element) }
+    ) => void;
+  } | undefined;
+}
+
 export default {
-  register(app: {
-    addMenuLink: (config: Record<string, unknown>) => void;
-    registerPlugin: (config: Record<string, unknown>) => void;
-  }) {
+  register(app: StrapiApp) {
     app.addMenuLink({
       to: `plugins/${PLUGIN_ID}`,
       icon: PluginIcon,
       intlLabel: {
         id: `${PLUGIN_ID}.plugin.name`,
-        defaultMessage: PLUGIN_ID,
+        defaultMessage: 'SEO Gemini',
       },
       Component: async () => {
-        const { App } = await import("./pages/App");
-
-        return App;
+        const { HomePage } = await import('./pages/HomePage');
+        return HomePage;
       },
+      permissions: [],
     });
 
-    app.registerPlugin({
-      id: PLUGIN_ID,
-      initializer: Initializer,
-      isReady: false,
-      name: PLUGIN_ID,
-    });
+    const contentManagerPlugin = app.getPlugin('content-manager');
+    if (contentManagerPlugin) {
+      contentManagerPlugin.injectComponent('editView', 'right-links', {
+        name: 'seo-gemini-sidebar',
+        Component: SeoSidebarWidget,
+      });
+    }
   },
 
   async registerTrads({ locales }: { locales: string[] }) {
