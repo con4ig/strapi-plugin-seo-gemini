@@ -77,3 +77,7 @@ This plugin was built with a focus on maintainability and performance:
 ---
 
 _Developed as a demonstration of technical proficiency in Strapi Plugin Development and AI Integration._
+
+## Support
+
+If this plugin saved your time, please give it a ⭐ on [GitHub](https://github.com/con4ig/strapi-plugin-seo-gemini)! It helps me stay motivated to add more AI features.
