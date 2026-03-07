@@ -41,12 +41,15 @@ npm run develop
 
 ## Configuration
 
-The plugin uses Strapi's configuration system for secure secret management.
+The plugin must be enabled in the Strapi configuration. 
 
-Add the following to `config/plugins.ts` (or `.js`):
+### 1. Update `config/plugins.ts` (or `.js`)
+
+Add the following configuration. If you already have other plugins, simply add `strapi-plugin-seo-gemini` to the object:
 
 ```typescript
 export default ({ env }) => ({
+  // ... other plugins
   'strapi-plugin-seo-gemini': {
     enabled: true,
     config: {
@@ -56,15 +59,51 @@ export default ({ env }) => ({
 });
 ```
 
-Ensure `GEMINI_API_KEY` is present in your `.env` file.
+### 2. Update `.env`
+
+Add your Google Gemini API key to your environment variables:
+
+```bash
+GEMINI_API_KEY=your_api_key_here
+```
 
 ## Usage
 
-1. **Prerequisites**: Ensure you have a component named `SEO` (or `seo`/`Seo`) in your Content-Type schema. The component should include fields for `metaTitle`, `metaDescription`, `keywords`, `metaRobots`, and `structuredData`.
-2. **Content Generation**: Navigate to the **Content Manager** and open an entry (e.g., an Article) that contains the SEO component.
-3. **Sidebar Interaction**: In the right sidebar, locate the **SEO Gemini AI** widget.
-4. **AI Generation**: Click **"Generate with AI"**. The plugin will automatically extract content from the main entry fields, send it for analysis, and populate the SEO component fields instantly.
-5. **Review and Save**: Review the generated metadata in the SEO component at the bottom of the page and save the entry.
+### 1. Create the SEO Component
+
+The plugin expects a component named `SEO` (or `seo`/`Seo`) with specific fields. Create a file at `src/components/shared/seo.json`:
+
+```json
+{
+  "collectionName": "components_shared_seos",
+  "info": {
+    "displayName": "SEO",
+    "icon": "search"
+  },
+  "attributes": {
+    "metaTitle": { "type": "string" },
+    "metaDescription": { "type": "string" },
+    "keywords": { "type": "string" },
+    "metaRobots": { "type": "string" },
+    "structuredData": { "type": "text" }
+  }
+}
+```
+
+### 2. Add to Content-Type
+
+In the **Content-Type Builder**, add the `SEO` component to your Content-Types. Use `seo` as the field name.
+
+### 3. Generate Metadata
+
+1. Open an entry in the **Content Manager**.
+2. Click **"Generate with AI"** in the sidebar.
+3. Review and **Save**.
+
+## Troubleshooting
+
+- **Widget not appearing?** Rebuild the admin panel (`npm run build`).
+- **Generation failing?** Check `GEMINI_API_KEY` and field names.
 
 ## Developer & Architectural Notes
 
