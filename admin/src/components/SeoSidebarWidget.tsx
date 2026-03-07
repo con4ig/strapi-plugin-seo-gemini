@@ -149,13 +149,13 @@ const SeoSidebarWidget = () => {
           } as any);
         }
         if (generated.structuredData) {
-          // Format as JSON object for Strapi
+          // Format as beautiful JSON string for Strapi text field
           const sdData =
             typeof generated.structuredData === 'string'
-              ? JSON.parse(generated.structuredData)
-              : generated.structuredData;
+              ? generated.structuredData
+              : JSON.stringify(generated.structuredData, null, 2);
           onChange({
-            target: { name: seoPrefix + 'structuredData', value: sdData, type: 'json' },
+            target: { name: seoPrefix + 'structuredData', value: sdData, type: 'string' },
           } as any);
         }
 
