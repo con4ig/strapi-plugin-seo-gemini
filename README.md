@@ -78,14 +78,29 @@ The plugin expects a component named `SEO` (or `seo`/`Seo`) with specific fields
   "collectionName": "components_shared_seos",
   "info": {
     "displayName": "SEO",
-    "icon": "search"
+    "icon": "search",
+    "description": "SEO fields for articles and pages"
   },
+  "options": {},
   "attributes": {
-    "metaTitle": { "type": "string" },
-    "metaDescription": { "type": "text" },
-    "keywords": { "type": "text" },
-    "metaRobots": { "type": "string" },
-    "structuredData": { "type": "json" }
+    "metaTitle": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "metaDescription": {
+      "type": "text",
+      "maxLength": 160
+    },
+    "keywords": {
+      "type": "text"
+    },
+    "metaRobots": {
+      "type": "string",
+      "default": "index, follow"
+    },
+    "structuredData": {
+      "type": "json"
+    }
   }
 }
 ```
