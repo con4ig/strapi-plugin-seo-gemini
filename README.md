@@ -85,7 +85,7 @@ The plugin expects a component named `SEO` (or `seo`/`Seo`) with specific fields
     "metaDescription": { "type": "string" },
     "keywords": { "type": "string" },
     "metaRobots": { "type": "string" },
-    "structuredData": { "type": "text" }
+    "structuredData": { "type": "json" }
   }
 }
 ```
