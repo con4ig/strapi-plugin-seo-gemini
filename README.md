@@ -8,7 +8,8 @@ An enterprise-grade Strapi 5 plugin that leverages Google's Gemini Flash AI mode
 - **Strict TypeScript Architecture**: 100% type-safe codebase. Zero usage of `any`. Implements specific interfaces for Strapi application contexts, Koa request/response cycles, and AI data schemas.
 - **Architectural Patterns**: Adheres to the **Controller-Service** pattern, ensuring a clean separation of concerns between API endpoints and business logic/AI orchestration.
 - **AI Orchestration & Fallbacks**: Features a robust Multi-Model Fallback mechanism (`gemini-2.5-flash` -> `2.0` -> `1.5`) to ensure high availability and resistance to API rate-limiting or outages.
-- **Intelligent Data Extraction**: Implements a dedicated content analysis utility that handles Strapi 5's new 'Blocks' JSON format and legacy text fields with intelligent context prioritization.
+- **Intelligent Schema-Agnostic Extraction**: Implements a robust content analysis utility that detects and prioritizes common fields (`title`, `body`, `category`, `tags`, etc.) across diverse Strapi schemas. It gracefully falls back to a global field scan if specific matches are not found, ensuring functionality regardless of the Content-Type structure.
+- **Strapi 5 Blocks Support**: Native handling of the new 'Blocks' JSON format alongside legacy rich text and plain string fields.
 - **One-Way Form Population**: Uses Strapi's internal `useForm` hook to programmatically populate form fields across various naming conventions (`SEO`, `seo`, `Seo`) using dynamic prefix detection.
 
 ## Requirements
